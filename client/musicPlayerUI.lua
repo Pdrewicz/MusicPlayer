@@ -2,12 +2,11 @@ local version = "0.8.2"
 local updateLog = "Update v"..version..":\nI think I fixed this thing"
 os.setComputerLabel("Music Player "..version)
 
-local url1 = "https://musicplayer.pdrewicz.site/"
-local url2 = "https://pdrewicz.site/musicplayer/"
+local url = "https://musicplayer.pdrewicz.site/server/"
+local downloadUrl = "https://musicplayer.pdrewicz.site/client/"
 
-local url = url1
 
-shell.run("wget",url2.."startUI.lua","temp/start.lua")
+shell.run("wget",downloadUrl.."startUI.lua","temp/start.lua")
 if fs.exists("temp/start.lua") then
     shell.run("rm","startup.lua")
     shell.run("mv","temp/start.lua","startup.lua")
@@ -37,8 +36,7 @@ else
     f.close()
 end
 
-http.post(url1.."createuser.php","player="..player)
-http.post(url2.."adduser.php","player="..player)
+http.post(url.."createuser.php","player="..player)
 
 local basalt = require("basalt")
 
@@ -218,16 +216,6 @@ function startBasalt()
     basalt.autoUpdate()
 end
 
-function checkUrl()
-    shell.run("wget",url2.."check.txt","temp/check.txt")
-    if fs.exists("temp/check.txt") then
-        shell.run("rm","temp/check.txt")
-        url = url2
-    else
-        url = url1
-    end
-end
-
 function mainMenu()
     addSongFrame:hide()
     downloadFrame:hide()
@@ -247,7 +235,7 @@ function startPlaylist()
     playlistButton:setText("Downloading...")
     local tempPlaylist = {}
     for i,v in ipairs(playlist) do
-        tempPlaylist[i] = {name=v,url=url1.."users/"..player.."/"..v..".dfpwm"}
+        tempPlaylist[i] = {name=v,url=url.."users/"..player.."/"..v..".dfpwm"}
     end
     local file = fs.open("playlist.json","w")
     file.write(json.encodePretty(tempPlaylist))
@@ -282,7 +270,6 @@ function showSongs()
             playlistThread:start(startPlaylist)
         end)
     playlistButton:hide()
-    url = url1
     playlist = {}
     local out = http.post(url.."filelist.php","player="..player).readAll()
     local songs = {}

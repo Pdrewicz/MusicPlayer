@@ -19,12 +19,12 @@ function startBasalt()
 end
 
 function start()
-shell.run("wget","https://pdrewicz.site/musicPlayer/json.lua")
+local url = "http://musicplayer.pdrewicz.site/client/"
 
-local url = "http://musicplayer.pdrewicz.site/"
+shell.run("wget",url.."json.lua")
 
 shell.run("mkdir","temp")
-shell.run("wget","https://pdrewicz.site/musicPlayer/musicPlayerUI.lua","temp/musicPlayer.lua")
+shell.run("wget",url.."/musicPlayerUI.lua","temp/musicPlayer.lua")
 if fs.exists("temp/musicPlayer.lua") then
     shell.run("rm","musicPlayer.lua")
     shell.run("move","temp/musicPlayer.lua","musicPlayer.lua")
@@ -35,7 +35,7 @@ if not fs.exists("playlist.json") then
     file.close()
 end
 
-shell.run("wget","https://pdrewicz.site/musicPlayer/speaker4.lua","temp/speaker4.lua")
+shell.run("wget",url.."speaker4.lua","temp/speaker4.lua")
 if fs.exists("temp/speaker4.lua") then
     shell.run("rm","speaker4.lua")
     shell.run("move","temp/speaker4.lua","speaker4.lua")
