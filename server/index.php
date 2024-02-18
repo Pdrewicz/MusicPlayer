@@ -17,7 +17,7 @@
 
 <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $name = $_POST["name"];
+        $name = str_replace("/","_",$_POST["name"]);
         $pos = strpos($_POST["link"],"&");
         if ($pos) {
             $link = substr($_POST["link"],0,$pos);

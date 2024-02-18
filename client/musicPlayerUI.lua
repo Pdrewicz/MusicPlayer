@@ -1,5 +1,5 @@
-local version = "0.8.2"
-local updateLog = "Update v"..version..":\nI think I fixed this thing"
+local version = "0.9"
+local updateLog = "Update v"..version..":\nYou can now use other\npeople's songs"
 os.setComputerLabel("Music Player "..version)
 
 local url = "https://musicplayer.pdrewicz.site/server/"
@@ -84,24 +84,38 @@ mainMenuFrame:addLabel()
     :setBackground(colors.black)
     :setForeground(colors.white)
 mainMenuFrame:addButton()
-    :setPosition(6,10)
+    :setPosition(2,10)
     :setSize(15,3)
-    :setText("Show songs")
+    :setText("Show my songs")
     :setBackground(colors.cyan)
     :onClick(function()
         showSongs()
     end)
 mainMenuFrame:addButton()
     :setSize(15,3)
-    :setPosition(6,15)
-    :setText("Add song")
+    :setPosition(2,14)
+    :setText("Add a song")
     :setBackground(colors.cyan)
     :onClick(function()
         addSong()
 end)
+mainMenuFrame:addButton()
+    :setSize(7,5)
+    :setPosition(19,11)
+    :setText("")
+    :setBackground(colors.lightBlue)
+    :onClick(function()
+        allSongs(1)
+end)
 mainMenuFrame:addLabel()
-    :setPosition(1,19)
-    :setSize("{parent.w}",2)
+    :setSize(7,5)
+    :setPosition(19,11)
+    :setText("\n See\n All\n Songs")
+    :setBackground(colors.lightBlue)
+    :setZ(10)
+mainMenuFrame:addLabel()
+    :setPosition(1,18)
+    :setSize("{parent.w}",3)
     :setText(updateLog)
     :setBackground(colors.black)
     :setForeground(colors.white)
@@ -120,6 +134,12 @@ local downloadLabel = downloadFrame:addLabel()
     :setForeground(colors.black)
 
 function downloadSong()
+    if string.len(songName) > 18 then
+        downloadLabel:setText("Name too Long\nMax 18 characters")
+        sleep(1)
+        mainMenu()
+        return
+    end
     local out = http.post(url.."filelist.php","player="..player).readAll()
     local songs = {}
     local separator = string.find(out,"<br>")
@@ -193,6 +213,8 @@ addSongFrame:addButton()
         songName = songNameInput:getValue()
         songName = string.gsub(songName, "%s+", "_")
         songLink = songLinkInput:getValue()
+        songNameInput:setValue("")
+        songLinkInput:setValue("")
         downloadThread:start(downloadSong)
 end)
 addSongFrame:addButton()
@@ -210,6 +232,7 @@ local showSongsFrame = mainFrame:addFrame()
     :setSize("{parent.w}", "{parent.h}")
     :setBackground(colors.black)
     :setVisible(false)
+
 
 
 function startBasalt()
@@ -235,7 +258,11 @@ function startPlaylist()
     playlistButton:setText("Downloading...")
     local tempPlaylist = {}
     for i,v in ipairs(playlist) do
-        tempPlaylist[i] = {name=v,url=url.."users/"..player.."/"..v..".dfpwm"}
+        if string.find(v,"/") then
+            tempPlaylist[i] = {name=string.sub(v,string.find(v,"/")+1,string.len(v)),url=url.."users/"..v..".dfpwm"}
+        else
+            tempPlaylist[i] = {name=v,url=url.."users/"..player.."/"..v..".dfpwm"}
+        end
     end
     local file = fs.open("playlist.json","w")
     file.write(json.encodePretty(tempPlaylist))
@@ -336,6 +363,138 @@ function showSongs()
                     playlistButton:hide()
                 end
             end)
+    end
+end
+
+-- All songs
+function allSongs(page)
+    mainMenuFrame:hide()
+    downloadFrame:hide()
+    addSongFrame:hide()
+    showSongsFrame:show()
+    showSongsFrame:removeChildren()
+    showSongsFrame:addButton()
+        :setSize("{parent.w}", 1)
+        :setPosition(1,"{parent.h - 2}")
+        :setBackground(colors.red)
+        :setForeground(colors.black)
+        :setText("Back")
+        :onClick(function()
+            mainMenu()
+        end)
+    playlistButton = showSongsFrame:addButton()
+        :setSize("{parent.w}", 1)
+        :setPosition(1,"{parent.h - 4}")
+        :setBackground(colors.orange)
+        :setForeground(colors.black)
+        :setText("Play playlist")
+        :onClick(function()
+            playlistThread:start(startPlaylist)
+        end)
+    playlistButton:hide()
+    playlist = {}
+    local out = http.get(url.."listAllFiles.php").readAll()
+    local songs = {}
+    local separator = string.find(out,"<br>")
+    while separator do
+        local song = string.sub(out,0,separator-1)
+        out = string.sub(out,separator+4)
+        separator = string.find(out,"<br>")
+        local exists = false
+        for i,v in ipairs(songs) do
+            if string.sub(v,string.find(v,"/")+1,string.len(v)) == string.sub(song,string.find(song,"/")+1,string.len(song)) then exists = true end
+        end
+        if not exists then
+            songs[#songs+1] = song
+        end
+    end
+    local pages = 1
+    if math.floor(#songs/18) == #songs/18 then
+        pages = #songs / 18
+    else
+        pages = math.floor(#songs/18)+1
+    end
+    local previousPageButton = showSongsFrame:addButton()
+        :setSize(5, 1)
+        :setPosition(1,"{parent.h - 3}")
+        :setBackground(colors.gray)
+        :setForeground(colors.black)
+        :setText("<")
+    if page > 1 then
+        previousPageButton:setBackground(colors.green)
+        previousPageButton:onClick(function()
+            allSongs(page-1)
+        end)
+    end
+    local nextPageButton = showSongsFrame:addButton()
+        :setSize(5, 1)
+        :setPosition("{parent.w - 6}","{parent.h - 3}")
+        :setBackground(colors.gray)
+        :setForeground(colors.black)
+        :setText(">")
+    if page < pages then
+        nextPageButton:setBackground(colors.green)
+        nextPageButton:onClick(function()
+            allSongs(page+1)
+        end)
+    end
+    showSongsFrame:addLabel()
+        :setSize("{parent.w - 10}", 1)
+        :setPosition(6,"{parent.h - 3}")
+        :setBackground(colors.lightGray)
+        :setForeground(colors.black)
+        :setTextAlign("center")
+        :setText(page.." / "..pages)
+        :onClick(function()
+            allSongs(page+1)
+        end)
+    for i,v in ipairs(songs) do
+        if i > 18*(page-1) and i < 18*page then
+        showSongsFrame:addButton()
+            :setSize("{parent.width - 3}",1)
+            :setText(i..": "..string.sub(v,string.find(v,"/")+1,string.len(v)))
+            :setPosition(1,i-18*(page-1))
+            :setBackground(colors.cyan)
+            :setForeground(colors.black)
+            :onClick(function(self,event,button,x,y)
+                shell.openTab("speaker4",url.."users/"..v..".dfpwm")
+                shell.switchTab(2)
+            end)
+        showSongsFrame:addButton()
+            :setSize(1,1)
+            :setPosition("{parent.w-2}",i-18*(page-1))
+            :setBackground(colors.orange)
+            :setForeground(colors.red)
+            :setText("\14")
+            :onClick(function(self,event,button)
+                local playlistId = -1
+                for j=1, #playlist do
+                    if playlist[j] == v then
+                        playlistId = j
+                    end
+                end
+                if playlistId == -1 then
+                    playlist[#playlist+1] = v
+                    self:setForeground(colors.green)
+                    self:setText("\15")
+                else
+                    self:setForeground(colors.red)
+                    self:setText("\14")
+                    local tempList = {}
+                    for j = 1, #playlist do
+                        if j ~= playlistId then
+                            tempList[#tempList+1] = playlist[j]
+                        end
+                    end
+                    playlist = tempList
+                end
+                if #playlist > 1 then
+                    playlistButton:show()
+                else
+                    playlistButton:hide()
+                end
+            end)
+        end
     end
 end
 
