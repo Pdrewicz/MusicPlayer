@@ -19,7 +19,7 @@ function startBasalt()
 end
 
 function start()
-local url = "http://musicplayer.pdrewicz.site/client/"
+local url = "https://aof-os.pdrewicz.site/musicplayer/client/"
 
 shell.run("wget",url.."json.lua")
 

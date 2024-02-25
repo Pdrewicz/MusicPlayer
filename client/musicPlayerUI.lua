@@ -2,8 +2,8 @@ local version = "0.9"
 local updateLog = "Update v"..version..":\nYou can now use other\npeople's songs"
 os.setComputerLabel("Music Player "..version)
 
-local url = "https://musicplayer.pdrewicz.site/server/"
-local downloadUrl = "https://musicplayer.pdrewicz.site/client/"
+local url = "https://aof-os.pdrewicz.site/musicplayer/server/"
+local downloadUrl = "https://aof-os.pdrewicz.site/musicplayer/client/"
 
 
 shell.run("wget",downloadUrl.."startUI.lua","temp/start.lua")
