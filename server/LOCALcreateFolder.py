@@ -12,7 +12,7 @@ for user in users["users"]:
         exists = True
 
 if not exists:
-    os.mkdir("/var/www/html/users/"+sys.argv[1])
+    os.mkdir("./users/"+sys.argv[1])
 
     f = open("LOCALusers.json","r")
     users = json.load(f)

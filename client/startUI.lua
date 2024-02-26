@@ -1,4 +1,20 @@
-shell.run("wget", "run", "https://basalt.madefor.cc/install.lua", "release", "latest.lua")
+local url = "https://aof-os.pdrewicz.site/musicplayer/client/"
+
+function downloadFile(fileUrl,fileName)
+    local content = http.get(fileUrl).readAll()
+    if content then
+        local file
+        if arg[1] and arg[1] == "aof-os" then
+            file = fs.open("programs/musicPlayer/"..fileName,"w")
+        else
+            file = fs.open(fileName,"w")
+        end
+        file.write(content)
+        file.close()
+    end
+end
+
+downloadFile(url.."basalt.lua","basalt.lua")
 
 local basalt = require("basalt")
 
@@ -19,32 +35,45 @@ function startBasalt()
 end
 
 function start()
-local url = "https://aof-os.pdrewicz.site/musicplayer/client/"
 
-shell.run("wget",url.."json.lua")
+downloadFile(url.."json.lua","json.lua")
 
-shell.run("mkdir","temp")
-shell.run("wget",url.."/musicPlayerUI.lua","temp/musicPlayer.lua")
-if fs.exists("temp/musicPlayer.lua") then
-    shell.run("rm","musicPlayer.lua")
-    shell.run("move","temp/musicPlayer.lua","musicPlayer.lua")
+downloadFile(url.."musicPlayerUI.lua","musicPlayer.lua")
+
+if arg[1] and arg[1] == "aof-os" then
+    if not fs.exists("programs/musicPlayer/playlist.json") then
+        local file = fs.open("programs/musicPlayer/playlist.json","w")
+        file.close()
+    end
+else
+    if not fs.exists("playlist.json") then
+        local file = fs.open("playlist.json","w")
+        file.close()
+    end
 end
 
-if not fs.exists("playlist.json") then
-    local file = fs.open("playlist.json","w")
-    file.close()
+downloadFile(url.."speaker4.lua","speaker4.lua")
+
+downloadFile(url.."check.txt","check.txt")
+local valid = false
+if arg[1] and arg[1] == "aof-os" then
+    if fs.exists("programs/musicPlayer/check.txt") then
+        valid = true
+        shell.run("rm","programs/musicPlayer/check.txt")
+    end
+else
+    if fs.exists("check.txt") then
+        valid = true
+        shell.run("rm","check.txt")
+    end
 end
 
-shell.run("wget",url.."speaker4.lua","temp/speaker4.lua")
-if fs.exists("temp/speaker4.lua") then
-    shell.run("rm","speaker4.lua")
-    shell.run("move","temp/speaker4.lua","speaker4.lua")
-end
-
-shell.run("wget",url.."check.txt","temp/check.txt")
-if fs.exists("temp/check.txt") then
-    shell.run("rm","temp/check.txt")
-    shell.openTab("musicPlayer.lua")
+if valid then
+    if arg[1] and arg[1] == "aof-os" then
+        shell.openTab("programs/musicPlayer/musicPlayer.lua","aof-os")
+    else
+        shell.openTab("musicPlayer.lua")
+    end
     shell.exit()
 else
     term.clear()

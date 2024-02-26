@@ -1,39 +1,64 @@
 local version = "0.9"
 local updateLog = "Update v"..version..":\nYou can now use other\npeople's songs"
-os.setComputerLabel("Music Player "..version)
+
+if not arg[1] or not arg[1] == "aof-os" then
+    os.setComputerLabel("Music Player "..version)
+end
 
 local url = "https://aof-os.pdrewicz.site/musicplayer/server/"
 local downloadUrl = "https://aof-os.pdrewicz.site/musicplayer/client/"
-
-
-shell.run("wget",downloadUrl.."startUI.lua","temp/start.lua")
-if fs.exists("temp/start.lua") then
-    shell.run("rm","startup.lua")
-    shell.run("mv","temp/start.lua","startup.lua")
-end
-
-if fs.exists("json.lua") then
-    os.loadAPI("json.lua")
-else
-    os.reboot()
-end
 
 local player = ""
 local songName = ""
 local songLink = ""
 local playlist = {}
 
-if fs.exists("name.txt") then
-    local f = fs.open("name.txt","r")
-    player = f.readLine()
-    f.close()
+if arg[1] and arg[1] == "aof-os" then
+    shell.run("wget",downloadUrl.."startUI.lua","programs/musicPlayer/temp/start.lua")
+    if fs.exists("programs/musicPlayer/temp/start.lua") then
+        shell.run("rm","programs/musicPlayer/startup.lua")
+        shell.run("mv","programs/musicPlayer/temp/start.lua","programs/musicPlayer/startup.lua")
+    end
+    if fs.exists("programs/musicPlayer/json.lua") then
+        os.loadAPI("programs/musicPlayer/json.lua")
+    else
+        os.reboot()
+    end
+    if fs.exists("programs/musicPlayer/name.txt") then
+        local f = fs.open("programs/musicPlayer/name.txt","r")
+        player = f.readLine()
+        f.close()
+    else
+        print("Enter Username:")
+        player = read()
+        
+        local f = fs.open("programs/musicPlayer/name.txt","w")
+        f.write(player)
+        f.close()
+    end
 else
-    print("Enter Username:")
-    player = read()
-    
-    local f = fs.open("name.txt","w")
-    f.write(player)
-    f.close()
+    shell.run("wget",downloadUrl.."startUI.lua","temp/start.lua")
+    if fs.exists("temp/start.lua") then
+        shell.run("rm","startup.lua")
+        shell.run("mv","temp/start.lua","startup.lua")
+    end
+    if fs.exists("json.lua") then
+        os.loadAPI("json.lua")
+    else
+        os.reboot()
+    end
+    if fs.exists("name.txt") then
+        local f = fs.open("name.txt","r")
+        player = f.readLine()
+        f.close()
+    else
+        print("Enter Username:")
+        player = read()
+        
+        local f = fs.open("name.txt","w")
+        f.write(player)
+        f.close()
+    end
 end
 
 http.post(url.."createuser.php","player="..player)
@@ -264,10 +289,19 @@ function startPlaylist()
             tempPlaylist[i] = {name=v,url=url.."users/"..player.."/"..v..".dfpwm"}
         end
     end
-    local file = fs.open("playlist.json","w")
+    local file
+    if arg[1] and arg[1] == "aof-os" then
+        file = fs.open("programs/musicPlayer/playlist.json","w")
+    else
+        file = fs.open("playlist.json","w")
+    end
     file.write(json.encodePretty(tempPlaylist))
     file.close()
-    shell.openTab("speaker4","playlist")
+    if arg[1] and arg[1] == "aof-os" then
+        shell.openTab("programs/musicPlayer/speaker4","playlist","aof-os")
+    else
+        shell.openTab("speaker4","playlist")
+    end
     shell.switchTab(2)
     playlistButton:setText("Play playlist")
 end
@@ -316,7 +350,11 @@ function showSongs()
             :setBackground(colors.cyan)
             :setForeground(colors.black)
             :onClick(function(self,event,button,x,y)
-                shell.openTab("speaker4",url.."users/"..player.."/"..v..".dfpwm")
+                if arg[1] and arg[1] == "aof-os" then
+                    shell.openTab("programs/musicPlayer/speaker4",url.."users/"..player.."/"..v..".dfpwm")
+                else
+                    shell.openTab("speaker4",url.."users/"..player.."/"..v..".dfpwm")
+                end
                 shell.switchTab(2)
             end)
         showSongsFrame:addButton()
@@ -457,7 +495,11 @@ function allSongs(page)
             :setBackground(colors.cyan)
             :setForeground(colors.black)
             :onClick(function(self,event,button,x,y)
-                shell.openTab("speaker4",url.."users/"..v..".dfpwm")
+                if arg[1] and arg[1] == "aof-os" then
+                    shell.openTab("programs/musicPlayer/speaker4",url.."users/"..v..".dfpwm")
+                else
+                    shell.openTab("speaker4",url.."users/"..v..".dfpwm")
+                end
                 shell.switchTab(2)
             end)
         showSongsFrame:addButton()

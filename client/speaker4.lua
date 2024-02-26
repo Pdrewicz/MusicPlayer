@@ -1,7 +1,7 @@
 -- SPDX-FileCopyrightText: 2021 The CC: Tweaked Developers
 --
 -- SPDX-License-Identifier: MPL-2.0
-local file = ...
+local file = arg[1]
 
 a = true
 local url = "https://musicplayer.pdrewicz.site/"
@@ -398,7 +398,12 @@ end
 
 function playlist()
     local speaker = get_speakers(name)[1]
-    local jsonIn = json.decodeFromFile("playlist.json")
+    local jsonIn
+    if arg[2] and arg[2] == "aof-os" then
+        jsonIn = json.decodeFromFile("programs/musicPlayer/playlist.json")
+    else
+        jsonIn = json.decodeFromFile("playlist.json")
+    end
     
     for i,v in ipairs(jsonIn) do
     local handle, err
