@@ -63,7 +63,7 @@ end
 
 http.post(url.."createuser.php","player="..player)
 
-local basalt = require("basalt")
+local basalt = require("/basalt")
 
 local mainFrame = basalt.createFrame()
     :setBackground(colors.black)
@@ -78,12 +78,27 @@ local mainMenuFrame = mainFrame:addFrame()
     :setBackground(colors.black)
     :setVisible(false)
 
-mainMenuFrame:addLabel()
+if arg[1] and arg[1] == "aof-os" then
+mainMenuFrame:addButton()
+    :setSize(3,1)
+    :setPosition("{parent.w-4}",1)
+    :setBackground(colors.red)
+    :setForeground(colors.black)
+    :setText("X")
+    :onClick(function()
+        os.reboot()
+    end)
+end
+
+local userNameLabel = mainMenuFrame:addLabel()
     :setPosition(1,1)
     :setSize("{parent.w}",1)
     :setText("Logged as "..player)
     :setBackground(colors.black)
     :setForeground(colors.white)
+
+if arg[1] and arg[1] == "aof-os" then userNameLabel:setPosition(1,2) end
+
 mainMenuFrame:addLabel()
     :setPosition(7,4)
     :setSize(6,1)

@@ -6,7 +6,7 @@ local file = arg[1]
 a = true
 local url = "https://musicplayer.pdrewicz.site/"
 local volume = 100
-local basalt = require("basalt")
+local basalt = require("/basalt")
 os.loadAPI("json.lua")
 
 local songs = {}

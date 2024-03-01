@@ -1,7 +1,10 @@
 local url = "https://aof-os.pdrewicz.site/musicplayer/client/"
+local url2 = "https://aof-os.pdrewicz.site/os/client/"
 
 function downloadFile(fileUrl,fileName)
-    local content = http.get(fileUrl).readAll()
+    local out = http.get(fileUrl)
+    local content = nil
+    if out then content = out.readAll() end
     if content then
         local file
         if arg[1] and arg[1] == "aof-os" then
@@ -14,9 +17,11 @@ function downloadFile(fileUrl,fileName)
     end
 end
 
-downloadFile(url.."basalt.lua","basalt.lua")
+if not (arg[1] and arg[1] == "aof-os") then
+    downloadFile(url2.."basalt.lua","basalt.lua")
+end
 
-local basalt = require("basalt")
+local basalt = require("/basalt")
 
 local mainFrame = basalt.createFrame()
     :setBackground(colors.black)
