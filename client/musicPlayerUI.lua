@@ -1,19 +1,19 @@
 local version = "0.9"
 local updateLog = "Update v"..version..":\nYou can now use other\npeople's songs"
 
-if not arg[1] or not arg[1] == "aof-os" then
+if not arg[1] or not arg[1] == "pd-os" then
     os.setComputerLabel("Music Player "..version)
 end
 
-local url = "https://aof-os.pdrewicz.site/musicplayer/server/"
-local downloadUrl = "https://aof-os.pdrewicz.site/musicplayer/client/"
+local url = "https://wd-eb.pdrewicz.site/musicplayer/server/"
+local downloadUrl = "https://wd-eb.pdrewicz.site/musicplayer/client/"
 
 local player = ""
 local songName = ""
 local songLink = ""
 local playlist = {}
 
-if arg[1] and arg[1] == "aof-os" then
+if arg[1] and arg[1] == "pd-os" then
     shell.run("wget",downloadUrl.."startUI.lua","programs/musicPlayer/temp/start.lua")
     if fs.exists("programs/musicPlayer/temp/start.lua") then
         shell.run("rm","programs/musicPlayer/startup.lua")
@@ -29,6 +29,7 @@ if arg[1] and arg[1] == "aof-os" then
         player = f.readLine()
         f.close()
     else
+	shell.run("clear")
         print("Enter Username:")
         player = read()
         
@@ -78,7 +79,7 @@ local mainMenuFrame = mainFrame:addFrame()
     :setBackground(colors.black)
     :setVisible(false)
 
-if arg[1] and arg[1] == "aof-os" then
+if arg[1] and arg[1] == "pd-os" then
 mainMenuFrame:addButton()
     :setSize(3,1)
     :setPosition("{parent.w-4}",1)
@@ -97,7 +98,7 @@ local userNameLabel = mainMenuFrame:addLabel()
     :setBackground(colors.black)
     :setForeground(colors.white)
 
-if arg[1] and arg[1] == "aof-os" then userNameLabel:setPosition(1,2) end
+if arg[1] and arg[1] == "pd-os" then userNameLabel:setPosition(1,2) end
 
 mainMenuFrame:addLabel()
     :setPosition(7,4)
@@ -305,15 +306,15 @@ function startPlaylist()
         end
     end
     local file
-    if arg[1] and arg[1] == "aof-os" then
+    if arg[1] and arg[1] == "pd-os" then
         file = fs.open("programs/musicPlayer/playlist.json","w")
     else
         file = fs.open("playlist.json","w")
     end
     file.write(json.encodePretty(tempPlaylist))
     file.close()
-    if arg[1] and arg[1] == "aof-os" then
-        shell.openTab("programs/musicPlayer/speaker4","playlist","aof-os")
+    if arg[1] and arg[1] == "pd-os" then
+        shell.openTab("programs/musicPlayer/speaker4","playlist","pd-os")
     else
         shell.openTab("speaker4","playlist")
     end
@@ -365,7 +366,7 @@ function showSongs()
             :setBackground(colors.cyan)
             :setForeground(colors.black)
             :onClick(function(self,event,button,x,y)
-                if arg[1] and arg[1] == "aof-os" then
+                if arg[1] and arg[1] == "pd-os" then
                     shell.openTab("programs/musicPlayer/speaker4",url.."users/"..player.."/"..v..".dfpwm")
                 else
                     shell.openTab("speaker4",url.."users/"..player.."/"..v..".dfpwm")
@@ -510,7 +511,7 @@ function allSongs(page)
             :setBackground(colors.cyan)
             :setForeground(colors.black)
             :onClick(function(self,event,button,x,y)
-                if arg[1] and arg[1] == "aof-os" then
+                if arg[1] and arg[1] == "pd-os" then
                     shell.openTab("programs/musicPlayer/speaker4",url.."users/"..v..".dfpwm")
                 else
                     shell.openTab("speaker4",url.."users/"..v..".dfpwm")

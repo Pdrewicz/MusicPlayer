@@ -1,5 +1,5 @@
-local url = "https://aof-os.pdrewicz.site/musicplayer/client/"
-local url2 = "https://aof-os.pdrewicz.site/os/client/"
+local url = "https://wd-eb.pdrewicz.site/musicplayer/client/"
+local url2 = "https://wd-eb.pdrewicz.site/os/client/"
 
 function downloadFile(fileUrl,fileName)
     local out = http.get(fileUrl)
@@ -7,7 +7,7 @@ function downloadFile(fileUrl,fileName)
     if out then content = out.readAll() end
     if content then
         local file
-        if arg[1] and arg[1] == "aof-os" then
+        if arg[1] and arg[1] == "pd-os" then
             file = fs.open("programs/musicPlayer/"..fileName,"w")
         else
             file = fs.open(fileName,"w")
@@ -17,7 +17,7 @@ function downloadFile(fileUrl,fileName)
     end
 end
 
-if not (arg[1] and arg[1] == "aof-os") then
+if not (arg[1] and arg[1] == "pd-os") then
     downloadFile(url2.."basalt.lua","basalt.lua")
 end
 
@@ -45,7 +45,7 @@ downloadFile(url.."json.lua","json.lua")
 
 downloadFile(url.."musicPlayerUI.lua","musicPlayer.lua")
 
-if arg[1] and arg[1] == "aof-os" then
+if arg[1] and arg[1] == "pd-os" then
     if not fs.exists("programs/musicPlayer/playlist.json") then
         local file = fs.open("programs/musicPlayer/playlist.json","w")
         file.close()
@@ -61,7 +61,7 @@ downloadFile(url.."speaker4.lua","speaker4.lua")
 
 downloadFile(url.."check.txt","check.txt")
 local valid = false
-if arg[1] and arg[1] == "aof-os" then
+if arg[1] and arg[1] == "pd-os" then
     if fs.exists("programs/musicPlayer/check.txt") then
         valid = true
         shell.run("rm","programs/musicPlayer/check.txt")
@@ -74,8 +74,8 @@ else
 end
 
 if valid then
-    if arg[1] and arg[1] == "aof-os" then
-        shell.openTab("programs/musicPlayer/musicPlayer.lua","aof-os")
+    if arg[1] and arg[1] == "pd-os" then
+        shell.openTab("programs/musicPlayer/musicPlayer.lua","pd-os")
     else
         shell.openTab("musicPlayer.lua")
     end

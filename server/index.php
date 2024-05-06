@@ -10,7 +10,7 @@
         Name:<input type="text" name="name"><br>
         Link:<input type="text" name="link"><br>
         Player:<input type="text" name="player"><br>
-        <button type="submit">Play</button>
+        <button type="submit">Add</button>
     </form>
 </body>
 </html>
@@ -34,6 +34,6 @@
         echo $output;
 	copy("converted/".$name.".dfpwm","users/".$player."/".$name.".dfpwm");
 	unlink("download/".$name.".webm");
-	//unlink("converted/".$name.".dfpwm");
+	unlink("converted/".$name.".dfpwm");
     }
 ?>

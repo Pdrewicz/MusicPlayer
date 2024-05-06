@@ -399,7 +399,7 @@ end
 function playlist()
     local speaker = get_speakers(name)[1]
     local jsonIn
-    if arg[2] and arg[2] == "aof-os" then
+    if arg[2] and arg[2] == "pd-os" then
         jsonIn = json.decodeFromFile("programs/musicPlayer/playlist.json")
     else
         jsonIn = json.decodeFromFile("playlist.json")
